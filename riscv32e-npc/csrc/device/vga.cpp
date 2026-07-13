@@ -139,6 +139,7 @@ void vga_write(uint32_t addr, int len, uint32_t data)
 
 bool vga_quit(void) //退出检查，每周期被调
 {
+  if (!g_sdl_ready) return true;  // VGA 从未初始化 → 不需要等窗口关闭
   SDL_Event ev;
   while (SDL_PollEvent(&ev))
   {
