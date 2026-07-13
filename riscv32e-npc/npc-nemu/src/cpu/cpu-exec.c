@@ -103,7 +103,7 @@ void npc_exec_once(void)
   {
     int halt_ret = npc_sim_halt_code();
     npc_set_state(NPC_END, this_pc, halt_ret);
-    printf("npc: program ended at pc = " FMT_WORD ", code = %d\n", this_pc, halt_ret);
+    printf("npc: program ended at pc = " FMT_WORD ", code = %d, total_inst = %lu\n", this_pc, halt_ret, g_nr_guest_inst);
     return;
   }
 
