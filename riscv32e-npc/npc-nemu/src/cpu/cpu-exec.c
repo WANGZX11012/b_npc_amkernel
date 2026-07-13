@@ -14,7 +14,19 @@ extern uint32_t pc_read(uint32_t addr);
 
 NPC_CPU_state npc_cpu = {};
 uint64_t g_nr_guest_inst = 0;
+static uint64_t g_timer = 0;
 static bool g_print_step = false;
+
+extern uint64_t npc_get_time(void);
+
+static void statistic(void) {
+  Log("host time spent = %lu us", g_timer);
+  Log("total guest instructions = %lu", g_nr_guest_inst);
+  if (g_timer > 0)
+    Log("simulation frequency = %lu inst/s", g_nr_guest_inst * 1000000 / g_timer);
+  else
+    Log("Finish running in less than 1 us and can not calculate the simulation frequency");
+}
 
 void npc_set_state(int state, vaddr_t pc, int halt_ret) 
 {
@@ -123,14 +135,32 @@ void npc_cpu_exec(uint64_t n)
     return;
   }
 
-  if (n == (uint64_t)-1) 
+  if (n == (uint64_t)-1)
   {
+        uint64_t timer_start = npc_get_time();
         while (npc_state.state != NPC_END &&
           npc_state.state != NPC_ABORT &&
           npc_state.state != NPC_QUIT)
         {
             npc_exec_once();
         }
+        uint64_t timer_end = npc_get_time();
+        g_timer += timer_end - timer_start;
+
+        switch (npc_state.state) {
+          case NPC_END:
+            Log("npc: %s at pc = " FMT_WORD,
+                npc_state.halt_ret == 0 ? ANSI_FMT("HIT GOOD TRAP", ANSI_FG_GREEN) :
+                                          ANSI_FMT("HIT BAD TRAP", ANSI_FG_RED),
+                npc_state.halt_pc);
+            break;
+          case NPC_ABORT:
+            Log("npc: " ANSI_FMT("ABORT", ANSI_FG_RED) " at pc = " FMT_WORD, npc_state.halt_pc);
+            break;
+          default: break;
+        }
+        statistic();
+
     // 程序退出了但 VGA 窗口可能还开着，等用户关窗
     printf("[CPU] waiting for VGA window close...\n");
     while (!npc_sim_vga_quit()) { /* vga_quit() 内部 poll SDL 事件 */ }
