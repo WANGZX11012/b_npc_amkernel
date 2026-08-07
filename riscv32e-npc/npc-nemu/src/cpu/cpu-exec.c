@@ -162,9 +162,11 @@ void npc_cpu_exec(uint64_t n)
         statistic();
 
     // 程序退出了但 VGA 窗口可能还开着，等用户关窗
-    printf("[CPU] waiting for VGA window close...\n");
-    while (!npc_sim_vga_quit()) { /* vga_quit() 内部 poll SDL 事件 */ }
-    printf("[CPU] VGA window closed, exiting\n");
+    if (npc_sim_vga_was_ready()) {
+      printf("[CPU] waiting for VGA window close...\n");
+      while (!npc_sim_vga_quit()) { }
+      printf("[CPU] VGA window closed, exiting\n");
+    }
     return;
   }
 

@@ -4,6 +4,7 @@
 #include "Vtop___024root.h"
 #include "dpic.h"
 #include "npc_device.h"
+#include "device/vga.h"
 #include "verilated.h"
 
 #include <cstdio>
@@ -45,10 +46,8 @@ extern "C" bool npc_sim_is_aborted(void)
   return sim_abort;
 }
 
-extern "C" bool npc_sim_vga_quit(void)
-{
-  return npc_vga_quit();
-}
+extern "C" bool npc_sim_vga_quit(void) { return npc_vga_quit(); }
+extern "C" bool npc_sim_vga_was_ready(void) { return vga_was_ready(); }
 
 
 

@@ -20,15 +20,15 @@ extern "C" {
     extern void npc_ebreak(int code);
     // DPI import at vsrc/dpic_invalid.v:1:30
     extern void npc_invalid_inst();
-    // DPI import at vsrc/LSU.v:11:30
+    // DPI import at vsrc/LSU.v:10:30
     extern int pmem_read_u16(int raddr);
-    // DPI import at vsrc/LSU.v:5:30
+    // DPI import at vsrc/LSU.v:6:30
     extern int pmem_read_u32(int raddr);
     // DPI import at vsrc/LSU.v:8:30
     extern char pmem_read_u8(int raddr);
-    // DPI import at vsrc/LSU.v:10:30
+    // DPI import at vsrc/LSU.v:9:30
     extern void pmem_write_u16(int waddr, int wdata);
-    // DPI import at vsrc/LSU.v:4:30
+    // DPI import at vsrc/LSU.v:5:30
     extern void pmem_write_u32(int waddr, int wdata);
     // DPI import at vsrc/LSU.v:7:30
     extern void pmem_write_u8(int waddr, char wdata);

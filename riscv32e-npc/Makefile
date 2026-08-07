@@ -44,6 +44,10 @@ else
 ENABLE_DIFFTEST :=0
 endif
 
+ifeq ($(CONFIG_USE_SRAM),y)
+VERILATOR_FLAGS += +define+USE_SRAM
+endif
+
 # Pass include paths and feature macros to verilator's -CFLAGS
 VERILATOR_FLAGS += -CFLAGS "-I$(NPC_NEMU_INC) -I$(NPC_CSRCS_INC) -I$(AM_INC) -I$(KLIB_INC) -DENABLE_DIFFTEST=$(ENABLE_DIFFTEST)" 
 ifeq ($(CONFIG_HAS_VGA),y)

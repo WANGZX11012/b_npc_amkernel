@@ -137,9 +137,10 @@ void vga_write(uint32_t addr, int len, uint32_t data)
   if (addr == BLIT_BASE + 20) { sdl_init(); gpu_blit(); return; } //BLIT_BASE+0 到 +16 只是暂存参数，+20（EXEC）才真正执行。
 }
 
+bool vga_was_ready(void) { return g_sdl_ready; }
+
 bool vga_quit(void) //退出检查，每周期被调
 {
-  if (!g_sdl_ready) return true;  // VGA 从未初始化 → 不需要等窗口关闭
   SDL_Event ev;
   while (SDL_PollEvent(&ev))
   {

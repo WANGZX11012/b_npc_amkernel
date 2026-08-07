@@ -26,9 +26,21 @@ image: image-dep
 	@echo + OBJCOPY "->" $(IMAGE_REL).bin
 	@$(OBJCOPY) -S --set-section-flags .bss=alloc,contents -O binary $(IMAGE).elf $(IMAGE).bin
 
-override NPC_HOME := $(AM_HOME)/../riscv32e-npc
+# NPC_RUN_MODE: dpi=单周期(DPI-C喂指令)  sram=多周期(Verilog内部SRAM,$readmemh加载)
+# 默认 dpi，由各 arch mk 在 include 前覆盖
+NPC_RUN_MODE ?= dpi
 
+ifeq ($(NPC_RUN_MODE),sram)
+override NPC_HOME := $(AM_HOME)/../npc
+IMG_HEX := $(NPC_HOME)/build/img.hex
+run: insert-arg
+	@python $(AM_HOME)/tools/bin2readmemh.py $(IMAGE).bin $(IMG_HEX)
+	@echo "[riscv32-npc] load $(IMAGE).bin -> $(IMG_HEX)"
+	@$(MAKE) -s -C $(NPC_HOME) run
+else
+override NPC_HOME := $(AM_HOME)/../riscv32e-npc
 run: insert-arg
 	$(NPC_HOME)/run-npc.sh $(IMAGE).bin  $(mainargs)
+endif
 
 .PHONY: insert-arg

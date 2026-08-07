@@ -95,7 +95,7 @@ class alignas(VL_CACHE_LINE_BYTES) Vtop___024root final : public VerilatedModule
         CData/*0:0*/ __VstlFirstIteration;
         CData/*0:0*/ __VicoFirstIteration;
         CData/*0:0*/ __Vtrigprevexpr___TOP__clk__0;
-        SData/*15:0*/ top__DOT__u_core__DOT__u_lsu__DOT__unnamedblk2__DOT__half;
+        SData/*15:0*/ top__DOT__u_core__DOT__u_lsu__DOT__unnamedblk2__DOT__h;
         VL_IN(inst,31,0);
         VL_OUT(pc,31,0);
         IData/*31:0*/ top__DOT__u_core__DOT__imm;

@@ -23,6 +23,7 @@ int npc_sim_halt_code(void);
 void npc_sim_mark_halt(int code);
 void npc_sim_mark_abort(void);
 bool npc_sim_vga_quit(void);
+bool npc_sim_vga_was_ready(void);
 
 #ifdef __cplusplus
 }

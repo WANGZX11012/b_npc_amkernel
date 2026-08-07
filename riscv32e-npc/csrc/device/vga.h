@@ -11,5 +11,6 @@ bool     vga_in_range(uint32_t addr);
 uint32_t vga_read   (uint32_t addr, int len);
 void     vga_write  (uint32_t addr, int len, uint32_t data);
 bool     vga_quit   (void);
+bool     vga_was_ready(void);
 
 #endif

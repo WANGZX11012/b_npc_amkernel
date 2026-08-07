@@ -1,0 +1,54 @@
+mainmenu "NPC Configuration Menu"
+
+config ISA
+  string
+  default "riscv32"
+
+menu "Devices"
+
+config HAS_SERIAL
+  bool "Enable serial (UART)"
+  default n
+
+config HAS_TIMER
+  bool "Enable timer (RTC)"
+  default n
+
+config HAS_VGA
+  bool "Enable VGA (SDL 2)"
+  default n
+
+config HAS_KEYBOARD
+  bool "Enable keyboard"
+  default n
+
+endmenu
+
+menu "Memory"
+
+config DATA_MEM_DELAY
+  int "Data memory delay (cycles)"
+  default 1
+  help
+    1 = SRAM speed, 5 = NOR flash, 20 = slow peripheral
+
+endmenu
+
+menu "Testing and Debugging"
+
+config HAS_LFSR
+  bool "Enable LFSR random delay (bus stress test)"
+  default n
+
+config WAVE
+  bool "Enable VCD waveform output"
+  default n
+
+config BATCH
+  bool "Enable batch mode (auto -b, run to completion)"
+  default n
+  help
+    When enabled, 'make run' passes -b to the simulator so it runs
+    the program to completion without entering the SDB prompt.
+
+endmenu
