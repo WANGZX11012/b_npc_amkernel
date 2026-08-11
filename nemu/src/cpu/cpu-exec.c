@@ -96,7 +96,7 @@ static void exec_once(Decode *s, vaddr_t pc)
 #endif
 }
 
-static void execute(uint64_t n)
+static void execute(uint64_t n)//传负数进去自动转化为64位无符号 所以相当于无限执行
 {
   Decode s;
 #ifdef CONFIG_DEVICE
