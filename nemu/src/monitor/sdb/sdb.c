@@ -56,7 +56,7 @@ static char* rl_gets()
 
 static int cmd_c(char *args) 
 {
-  cpu_exec(-1); // 执行无限步（直到结束）
+  cpu_exec(-2); // 执行无限步（直到结束）
   return 0;  // 返回 0 表示继续循环  -1才是退出
 }
 
