@@ -106,20 +106,25 @@ __EXPORT void difftest_regcpy(void *dut, bool direction)
   // 布局: r[0]=pc, r[1..32]=gpr[0..31], r[33]=mcycle_lo, r[34]=mcycle_hi
   uint32_t *r = (uint32_t *)dut;
 
-  if (direction == DIFFTEST_TO_REF) {
+  if (direction == DIFFTEST_TO_REF) 
+  {
     // ─── 方向: 写入 REF (NPC → NEMU) ───
     cpu.pc = r[IDX_PC];                 // r[0] = NPC 的 PC
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 32; i++) 
+    {
       cpu.gpr[i] = r[IDX_GPR + i];     // r[1..32] = NPC 的 x0..x31
     }
     cpu.gpr[0] = 0;                     // x0 强制清零 (RISC-V 规范)
     // [MODIFIED] 同步 mcycle 值，确保 csrr mcycle 结果一致
     cpu.csr.mcycle_lo = r[IDX_MCYCLE_LO];
     cpu.csr.mcycle_hi = r[IDX_MCYCLE_HI];
-  } else {
+  } 
+  else 
+  {
     // ─── 方向: 读取 REF (NEMU → NPC) ───
     r[IDX_PC] = cpu.pc;                // r[0] = NEMU 的 PC
-    for (int i = 0; i < 32; i++) {
+    for (int i = 0; i < 32; i++) 
+    {
       r[IDX_GPR + i] = cpu.gpr[i];    // r[1..32] = NEMU 的 x0..x31
     }
     r[IDX_GPR] = 0;                    // x0 始终报告为 0
@@ -153,7 +158,8 @@ __EXPORT void difftest_regcpy(void *dut, bool direction)
 __EXPORT void difftest_exec(uint64_t n) 
 {
   Decode s;  // 译码上下文: pc, snpc(顺序下一条), dnpc(动态下一条), isa.inst
-  for (uint64_t i = 0; i < n; i++) {
+  for (uint64_t i = 0; i < n; i++) 
+  {
     // 如果 NEMU 已经停止 (ebreak 或 abort), 不再继续执行
     if (nemu_state.state != NEMU_RUNNING) break;
 

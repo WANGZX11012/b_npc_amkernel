@@ -51,4 +51,12 @@ config BATCH
     When enabled, 'make run' passes -b to the simulator so it runs
     the program to completion without entering the SDB prompt.
 
+config DIFFTEST
+  bool "Enable differential testing (vs NEMU ref.so)"
+  default n
+  help
+    When enabled, NPC runs alongside NEMU (riscv32-nemu-interpreter-so)
+    and compares PC + GPR after every committed instruction.
+    Requires: nemu/build/riscv32-nemu-interpreter-so.
+
 endmenu

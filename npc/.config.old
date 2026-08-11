@@ -26,4 +26,4 @@ CONFIG_HAS_LFSR=y
 # CONFIG_WAVE is not set
 # CONFIG_BATCH is not set
 # end of Testing and Debugging
-CONFIG_BATCH=y
+CONFIG_DIFFTEST=y

@@ -9,13 +9,19 @@ VSRCS  = $(sort $(wildcard vsrc/*.v))
 VHSRCS = $(wildcard vsrc/*.vh)
 CSRCS  = $(NPC_CSRC)/main.c          \
          $(NPC_CSRC)/npc.cpp         \
+         $(NPC_CSRC)/difftest.cpp    \
          $(NPC_CSRC)/monitor/monitor.c \
          $(NPC_CSRC)/cpu/cpu-exec.c  \
          $(NPC_CSRC)/sdb/sdb.c
 
+# NEMU 的 include(提供 difftest-def.h)和 ref.so
+NEMU_INC  = $(abspath ../nemu/include)
+REF_SO    = $(abspath ../nemu/build/riscv32-nemu-interpreter-so)
+
 VERILATOR_FLAGS = --cc --exe --build --trace --Mdir $(BUILD_DIR) \
                   -I$(abspath vsrc) \
-                  -CFLAGS "-I$(NPC_CSRC)" \
+                  -CFLAGS "-I$(NPC_CSRC) -I$(NEMU_INC) -DENABLE_DIFFTEST=$(ENABLE_DIFFTEST)" \
+                  -LDFLAGS "-ldl" \
                   -Wall -Wno-fatal \
                   --top-module $(TOPNAME)
 
@@ -37,6 +43,13 @@ ifeq ($(CONFIG_BATCH),y)
 RUN_FLAGS += -b
 endif
 
+# DIFFTEST 由 menuconfig 控制：CONFIG_DIFFTEST=y → 编译 difftest 并拷贝 ref.so
+ifeq ($(CONFIG_DIFFTEST),y)
+ENABLE_DIFFTEST :=1
+else
+ENABLE_DIFFTEST :=0
+endif
+
 # bin2readmemh.py: 把 AM 编出的 .bin 转成 Verilog $readmemh 兼容的 hex 格式
 BIN2HEX := $(NPC_HOME)/../abstract-machine/tools/bin2readmemh.py
 # inst_mem.v 中 $readmemh("build/img.hex") 的加载目标（相对运行目录 npc/）
@@ -46,6 +59,9 @@ IMG_HEX := $(BUILD_DIR)/img.hex
 
 all:
 	@verilator $(VERILATOR_FLAGS) $(VSRCS) $(CSRCS)
+ifeq ($(CONFIG_DIFFTEST),y)
+	@cp $(REF_SO) $(BUILD_DIR)/ref.so
+endif
 
 run: all
 # 仅当命令行传入的IMG非空 ifneq是判断是不是空的 IMG=xxx.bin 时才转换镜像，否则跑 inst_mem 内置的 4 条占位指令
