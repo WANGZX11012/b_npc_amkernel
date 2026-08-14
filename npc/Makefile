@@ -10,6 +10,7 @@ VHSRCS = $(wildcard vsrc/*.vh)
 CSRCS  = $(NPC_CSRC)/main.c          \
          $(NPC_CSRC)/npc.cpp         \
          $(NPC_CSRC)/difftest.cpp    \
+         $(NPC_CSRC)/dpic_mem.cpp    \
          $(NPC_CSRC)/monitor/monitor.c \
          $(NPC_CSRC)/cpu/cpu-exec.c  \
          $(NPC_CSRC)/sdb/sdb.c
@@ -32,6 +33,11 @@ include $(NPC_HOME)/scripts/config.mk
 # 必须在 include auto.conf 之后，否则 CONFIG_xxx 未定义
 VERILATOR_FLAGS += $(if $(CONFIG_HAS_LFSR),+define+HAS_LFSR)
 VERILATOR_FLAGS += $(if $(CONFIG_DATA_MEM_DELAY),+define+DATA_MEM_DELAY=$(CONFIG_DATA_MEM_DELAY))
+VERILATOR_FLAGS += $(if $(CONFIG_DPI_MEM),+define+DPI_MEM)
+
+# DPI_MEM 的内存由 C++ 侧 dpi_pmem_words[] 自己持有 (见 csrc/dpic_mem.cpp),
+# 不依赖 NEMU pmem, 因此 DPI_MEM 与 DIFFTEST 解耦, 二者可独立开关。
+# 若同时开 DIFFTEST, 由 difftest.cpp 用 dpi_pmem_copy_out() 把 DUT 内存同步给 REF。
 
 # WAVE 由 menuconfig 控制：CONFIG_WAVE=y → make run 自动带 -w
 ifeq ($(CONFIG_WAVE),y)

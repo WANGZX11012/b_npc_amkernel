@@ -26,6 +26,15 @@ endmenu
 
 menu "Memory"
 
+config DPI_MEM
+  bool "Use DPI-C memory (backed by NEMU pmem)"
+  default n
+  help
+    When enabled, instruction/data memory are implemented as DPI-C
+    slaves that read/write NEMU's physical memory via difftest_memcpy,
+    instead of Verilog reg arrays. This removes the 128KB capacity
+    limit so large images (e.g. am-tests) can run. Requires DIFFTEST=y.
+
 config DATA_MEM_DELAY
   int "Data memory delay (cycles)"
   default 1
