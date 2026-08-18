@@ -31,13 +31,14 @@ image: image-dep
 NPC_RUN_MODE ?= dpi
 
 ifeq ($(NPC_RUN_MODE),sram)
+# 多周期 NPC (npc/): 走 Verilator + DPI, 物理内存在 C++ 侧 pmem_words[],
+# 不需要 Verilog $readmemh 的 img.hex (DPI 直接经 dpi_load_bin 读 .bin)。
 override NPC_HOME := $(AM_HOME)/../npc
-IMG_HEX := $(NPC_HOME)/build/img.hex
 run: insert-arg
-	@python $(AM_HOME)/tools/bin2readmemh.py $(IMAGE).bin $(IMG_HEX)
-	@echo "[riscv32-npc] load $(IMAGE).bin -> $(IMG_HEX)"
-	@$(MAKE) -s -C $(NPC_HOME) run
+	@echo "[riscv32-npc] run $(IMAGE).bin on multi-cycle NPC (DPI mode)"
+	@$(MAKE) -s -C $(NPC_HOME) run IMG=$(IMAGE).bin
 else
+# 单周期 NPC (riscv32e-npc/): 旧实现, 走 run-npc.sh
 override NPC_HOME := $(AM_HOME)/../riscv32e-npc
 run: insert-arg
 	$(NPC_HOME)/run-npc.sh $(IMAGE).bin  $(mainargs)

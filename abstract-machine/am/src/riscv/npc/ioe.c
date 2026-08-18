@@ -34,7 +34,7 @@ bool ioe_init() {
   for (int i = 0; i < LENGTH(lut); i++)
     if (!lut[i]) lut[i] = fail;
   __am_timer_init();
-  __am_gpu_init();
+  // __am_gpu_init();  // [临时] NPC 未实现 GPU 设备, 读 0xa0000100 会挂死, 先注释掉让 rtc 等测试能跑
   return true;
 }
 
