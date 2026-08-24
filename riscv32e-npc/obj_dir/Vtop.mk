@@ -41,14 +41,9 @@ VM_USER_CFLAGS = \
 
 # User LDLIBS (from -LDFLAGS on Verilator command line)
 VM_USER_LDLIBS = \
-  -lSDL2 \
 
 # User .cpp files (from .cpp's on Verilator command line)
 VM_USER_CLASSES = \
-  keyboard \
-  serial \
-  timer \
-  vga \
   difftest \
   dpic \
   main \
@@ -59,7 +54,6 @@ VM_USER_CLASSES = \
 VM_USER_DIR = \
   .. \
   ../csrc \
-  ../csrc/device \
 
 ### Default rules...
 # Include list of all generated classes
@@ -70,14 +64,6 @@ include $(VERILATOR_ROOT)/include/verilated.mk
 ### Executable rules... (from --exe)
 VPATH += $(VM_USER_DIR)
 
-keyboard.o: csrc/device/keyboard.cpp 
-	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-serial.o: csrc/device/serial.cpp 
-	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-timer.o: csrc/device/timer.cpp 
-	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
-vga.o: csrc/device/vga.cpp 
-	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
 difftest.o: csrc/difftest.cpp 
 	$(OBJCACHE) $(CXX) $(CXXFLAGS) $(CPPFLAGS) $(OPT_FAST)  -c -o $@ $<
 dpic.o: csrc/dpic.cpp 

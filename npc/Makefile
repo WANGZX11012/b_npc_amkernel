@@ -19,16 +19,21 @@ CSRCS  = $(NPC_CSRC)/main.c          \
 NEMU_INC  = $(abspath ../nemu/include)
 REF_SO    = $(abspath ../nemu/build/riscv32-nemu-interpreter-so)
 
-VERILATOR_FLAGS = --cc --exe --build --trace --Mdir $(BUILD_DIR) \
+VERILATOR_FLAGS = --cc --exe --build  --Mdir $(BUILD_DIR) \
                   -I$(abspath vsrc) \
-                  -CFLAGS "-I$(NPC_CSRC) -I$(NEMU_INC) -DENABLE_DIFFTEST=$(ENABLE_DIFFTEST)" \
+                  -CFLAGS "-DTRACE_ENABLE=$(TRACE_ENABLE) -I$(NPC_CSRC) -I$(NEMU_INC) -DENABLE_DIFFTEST=$(ENABLE_DIFFTEST)" \
                   -LDFLAGS "-ldl" \
                   -Wall -Wno-fatal \
-                  --top-module $(TOPNAME)
+                  --top-module $(TOPNAME) \
+                  -MAKEFLAGS "OPT_FAST=-O3 OPT_GLOBAL=-O3"
 
 # ── Kconfig ──
 include $(NPC_HOME)/scripts/config.mk
 -include $(NPC_HOME)/include/config/auto.conf
+# 必须在 include auto.conf 之后才能读 CONFIG_WAVE
+TRACE_ENABLE := $(if $(CONFIG_WAVE),1,0)
+VERILATOR_FLAGS += $(if $(CONFIG_WAVE),--trace)
+
 
 # 必须在 include auto.conf 之后，否则 CONFIG_xxx 未定义
 VERILATOR_FLAGS += $(if $(CONFIG_HAS_LFSR),+define+HAS_LFSR)
