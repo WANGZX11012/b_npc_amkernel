@@ -4,7 +4,10 @@
 #include "Vtop___024root.h"
 #include "dpic.h"
 #include "npc_device.h"
+#include "generated/autoconf.h"
+#ifdef CONFIG_HAS_VGA
 #include "device/vga.h"
+#endif
 #include "verilated.h"
 
 #include <cstdio>
@@ -47,7 +50,13 @@ extern "C" bool npc_sim_is_aborted(void)
 }
 
 extern "C" bool npc_sim_vga_quit(void) { return npc_vga_quit(); }
-extern "C" bool npc_sim_vga_was_ready(void) { return vga_was_ready(); }
+extern "C" bool npc_sim_vga_was_ready(void) {
+#ifdef CONFIG_HAS_VGA
+  return vga_was_ready();
+#else
+  return false;
+#endif
+}
 
 
 
