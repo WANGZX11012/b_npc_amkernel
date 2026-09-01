@@ -12,7 +12,7 @@ extern char _pmem_start;
 Area heap = RANGE(&_heap_start, PMEM_END);
 static const char mainargs[MAINARGS_MAX_LEN] = TOSTRING(MAINARGS_PLACEHOLDER); // defined in CFLAGS
 
-void putch(char ch) 
+void putch(char ch) //最终编成一条 sb a0, 0xa00003f8(zero)，其中 a0=ch。
 {
   *(volatile uint8_t*)0xa00003f8 = ch; //魔法读写?
 }

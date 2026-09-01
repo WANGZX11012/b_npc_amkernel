@@ -11,7 +11,8 @@
 // 注意: 这是"名义频率下的模拟时间", 不是宿主墙钟, 严格 1s=1s 只有 rtc 能给。
 //       想验证 mtime 是否递增, 直接看 uptime->us 持续变大即可。
 #define CLINT_ADDR 0xa0000050u  // clint mtime 基地址（低 32 位在 +0, 高 32 位在 +4）
-#define CLINT_MHZ  100u         // 频率系数: 名义时钟 MHz, 调整它即调整 mtime 的时间尺度
+#define CLINT_MHZ  1u         // 频率系数: 名义时钟 MHz, 调整它即调整 mtime 的时间尺度
+#define CLINT_clk_devide 4    // 当前频率 再除的频率 例如现在是1M 除以5
 
 // void __am_timer_init() {
 // }
@@ -43,13 +44,13 @@ void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
   uint32_t lo = *(volatile uint32_t *)(CLINT_ADDR + 0);
   uint32_t hi = *(volatile uint32_t *)(CLINT_ADDR + 4);
   uint64_t mtime = ((uint64_t)hi << 32) | lo;
-  uptime->us = mtime / CLINT_MHZ;   // 周期数 → 微秒（乘系数换算成接近真实时间）
+  uptime->us = mtime * CLINT_clk_devide / CLINT_MHZ;   // 周期数 → 微秒（乘系数换算成接近真实时间）
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {
   AM_TIMER_UPTIME_T uptime;
   __am_timer_uptime(&uptime);
-  uint64_t sec = uptime.us / 1000000;
+  uint64_t sec = uptime.us  / 1000000;
 
   rtc->second = sec % 60;
   rtc->minute = (sec / 60) % 60;
