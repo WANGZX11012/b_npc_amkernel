@@ -26,5 +26,5 @@ CONFIG_DATA_MEM_DELAY=1
 # CONFIG_HAS_LFSR is not set
 # CONFIG_WAVE is not set
 CONFIG_BATCH=y
-CONFIG_DIFFTEST=y
+# CONFIG_DIFFTEST is not set
 # end of Testing and Debugging

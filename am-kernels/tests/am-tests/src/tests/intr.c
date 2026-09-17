@@ -6,7 +6,7 @@ Context *simple_trap(Event ev, Context *ctx) //接受一个event 触发原因 �
   switch(ev.event) 
   {
     case EVENT_IRQ_TIMER:
-      putch('t'); break;
+      putch('t'); putch(' ');  break;
     case EVENT_IRQ_IODEV:
       putch('d'); break;
     case EVENT_YIELD: // 1 是 yield
