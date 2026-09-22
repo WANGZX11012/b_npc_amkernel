@@ -74,14 +74,14 @@ enum { IDX_PC = 0, IDX_GPR = 1, IDX_MCYCLE_LO = 33, IDX_MCYCLE_HI = 34 };
 // ============================================================================
 __EXPORT void difftest_memcpy(paddr_t addr, void *buf, size_t n, bool direction) 
 {
+  uint8_t *p = (uint8_t *)buf;
   if (direction == DIFFTEST_TO_REF) {
-    // DUT → REF: 把 buf 中的 n 字节拷贝到 NEMU 物理地址 addr 处
-    memcpy(guest_to_host(addr), buf, n);
+    for (size_t i = 0; i < n; i++) paddr_write(addr + i, 1, p[i]);
   } else {
-    // REF → DUT: 把 NEMU 物理地址 addr 处的 n 字节拷贝到 buf
-    memcpy(buf, guest_to_host(addr), n);
+    for (size_t i = 0; i < n; i++) p[i] = (uint8_t)paddr_read(addr + i, 1);
   }
 }
+
 
 // ============================================================================
 // difftest_regcpy — 寄存器批量拷贝 (最核心的 API!)
@@ -205,11 +205,18 @@ __EXPORT void difftest_init(int port)
   // 前置声明 (定义在 NEMU 其他源文件中)
   void init_mem();   // src/memory/paddr.c — 分配物理内存
   void init_rand();  // src/utils/rand.c    — 随机数种子
+  void init_map();
+  void init_mrom();
+  void init_sram();
 
   init_rand();                          // ① 随机数种子
   init_mem();                           // ② 分配物理内存 (128MB, 从 0x80000000 开始)
   init_isa();                           // ③ ISA 初始化 (加载内置镜像 + 设置 RESET_VECTOR)
   nemu_state.state = NEMU_RUNNING;      // ④ 标记 NEMU 为 "运行中" 状态
+  IFDEF(CONFIG_DEVICE,   init_map());
+  IFDEF(CONFIG_HAS_MROM, init_mrom());
+  IFDEF(CONFIG_HAS_SRAM, init_sram());
+
 }
 
 // ============================================================================// difftest_load_image — 加载 hex 程序 (npc-nemu dut.c 旧接口使用)

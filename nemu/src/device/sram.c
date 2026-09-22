@@ -1,4 +1,6 @@
 #include <device/map.h>      // add_mmio_map / new_space
+#include <string.h>
+
 #define SRAM_BASE  0x0f000000u
 #define SRAM_SIZE  0x2000u      /* 8KB : 和 SoC 的 SRAM 一致 */
 static uint8_t *sram_space = NULL;
