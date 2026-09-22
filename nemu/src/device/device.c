@@ -29,8 +29,9 @@ void init_audio();
 void init_disk();
 void init_sdcard();
 void init_alarm();
-void init_sram();
-void init_mrom();
+
+void sram_init();
+void mrom_init();
 
 void send_key(uint8_t, bool);
 void vga_update_screen();
@@ -86,8 +87,8 @@ void init_device() {
   IFDEF(CONFIG_HAS_AUDIO, init_audio());
   IFDEF(CONFIG_HAS_DISK, init_disk());
   IFDEF(CONFIG_HAS_SDCARD, init_sdcard());
-  IFDEF(CONFIG_MROM, mrom_init());
-  IFDEF(CONFIG_SRAM, sram_init());
+  IFDEF(CONFIG_HAS_MROM, mrom_init());
+  IFDEF(CONFIG_HAS_SRAM, sram_init());
 
   IFNDEF(CONFIG_TARGET_AM, init_alarm());
 }
