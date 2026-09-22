@@ -181,16 +181,20 @@ lint: $(SOC_V)
 #   --output-split 20000  把生成的 C++ 拆成多个文件, 每个不超过 20000 条语句。
 #                         不拆的话 verilator 会把整颗 SoC 生成进一个巨大 .cpp,
 #                         g++ 编它极慢、极吃内存 —— SoC 量级基本必加
+#加了自动冲刷 防止
 build: $(SOC_V) $(TB_CPP)
-	verilator --cc --exe --build --Mdir $(BUILD_DIR) -j 4 --output-split 20000 \
+	verilator --cc --exe --build --Mdir  $(BUILD_DIR) --autoflush -j 4 --output-split 20000 \
 	          $(BASE_FLAGS) $(V_FILES) $(TB_CPP)
 
 
 # ═══════════════ 12. 目标: run ═══════════════
 
 # verilator 生成的可执行文件名 = V + 顶层模块名, 所以是 build/VysyxSoCFull
+IMG ?= test/char-test.bin
+
 run: build
-	./$(BUILD_DIR)/V$(TOPNAME)
+	./$(BUILD_DIR)/V$(TOPNAME) $(IMG)
+
 
 
 # ═══════════════ 13. 目标: clean ═══════════════
