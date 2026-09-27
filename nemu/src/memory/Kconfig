@@ -1,4 +1,12 @@
 menu "Memory Configuration"
+config DIFFTEST_SOC
+  depends on MODE_SYSTEM
+  bool "ysyxSoC address window (for SoC DiffTest)"
+  default n
+  help
+    will add a new space for difftest
+      SRAM 0x0f000000 / UART 0x10000000 / MROM 0x20000000
+
 
 config MBASE
   hex "Memory base address"

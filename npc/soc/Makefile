@@ -96,8 +96,7 @@ CPU_V = $(filter-out $(NPC_SKIP), $(wildcard $(NPC_HOME)/vsrc/*.v))
 # ═══════════════ 5. 仿真 tb —— 第七步 ═══════════════
 
 # 还没写, 所以现在 `make build` 会失败; `make lint` 不受影响(它不需要 tb)
-TB_CPP = soc_tb.cpp
-
+TB_CPP = soc_tb.cpp soc_mem.cpp soc_dbg.cpp
 
 # ═══════════════ 6. verilator 的选项 ═══════════════
 #
