@@ -34,7 +34,7 @@ static uint8_t pmem[CONFIG_MSIZE] PG_ALIGN = {};  //pmem初始化是0
 uint8_t* guest_to_host(paddr_t paddr) //虚拟地址映射到pmem数组 也就是减去0x80000000 soc 用单独的数组
 { 
   #if defined(CONFIG_DIFFTEST_SOC)
-    if(in_soc_win(paddr)) return soc_mem + (paddr - SOC_WIN_BASE)
+    if(in_soc_win(paddr)) return soc_mem + (paddr - SOC_WIN_BASE);
     return pmem + paddr - CONFIG_MBASE;
   #endif
   return pmem + paddr - CONFIG_MBASE; 
