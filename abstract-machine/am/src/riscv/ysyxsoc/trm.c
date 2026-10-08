@@ -27,7 +27,7 @@ void    halt(int code)
 static void uart_init(void)
 {
     *(volatile unsigned char *)(0x10000000 + 3) = 0x80;  /* LCR: DLAB=1 */
-    *(volatile unsigned char *)(0x10000000 + 0) = 0x01;  /* DLL = 1 (分频低字节) */
+    *(volatile unsigned char *)(0x10000000 + 0) = 0x10;  /* DLL = 16 (分频低字节) */
     *(volatile unsigned char *)(0x10000000 + 1) = 0x00;  /* DLM = 0 (分频高字节) */
     *(volatile unsigned char *)(0x10000000 + 3) = 0x03;  /* LCR: 8 数据位 1 停止位, DLAB=0 */
 }
