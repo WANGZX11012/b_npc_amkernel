@@ -1,8 +1,13 @@
 #include <klib.h>
 #include <stdint.h>
 
-#define RTC_LO 0xa0000048u   // uptime 低 32 位（us）
-#define RTC_HI 0xa000004cu   // uptime 高 32 位
+// #define RTC_LO 0xa0000048u   // uptime 低 32 位（us）
+// #define RTC_HI 0xa000004cu   // uptime 高 32 位
+
+// soc的mtime 
+#define RTC_LO 0x0200BFF8  
+#define RTC_HI 0x0200BFFC  
+
 
 static inline uint64_t rtc_read(void) {
   uint32_t lo = *(volatile uint32_t *)RTC_LO;

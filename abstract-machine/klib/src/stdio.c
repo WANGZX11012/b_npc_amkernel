@@ -28,13 +28,12 @@ int vsprintf(char *out, const char *fmt, va_list ap) {
     if (*p == 'd') 
     {
       int argint = va_arg(ap, int);
-      long long v = argint;
-      if (v < 0) 
+      if (argint < 0) 
       {
         *o++ = '-';
-        v = -v;
+        argint = -argint;
       }
-
+      unsigned int v = (unsigned int)argint;
       if (v == 0) 
       {
         *o++ = '0';
@@ -143,7 +142,7 @@ int sprintf(char *out, const char *fmt, ...)
 
 int printf(const char *fmt, ...) 
 {
-  char buf[4096];
+  char buf[256];
   va_list ap;
   va_start(ap, fmt);
   int ret = vsprintf(buf, fmt, ap);
