@@ -1,0 +1,12 @@
+build/
+soc/build/
+*.gch
+*.pch
+obj_dir/
+*.vcd
+*.fst
+*.o
+*.d
+*.a
+*.so
+include/config/

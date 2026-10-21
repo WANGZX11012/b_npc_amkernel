@@ -39,6 +39,17 @@ VERILATOR_FLAGS += $(if $(CONFIG_WAVE),--trace)
 VERILATOR_FLAGS += $(if $(CONFIG_HAS_LFSR),+define+HAS_LFSR)
 VERILATOR_FLAGS += $(if $(CONFIG_DATA_MEM_DELAY),+define+DATA_MEM_DELAY=$(CONFIG_DATA_MEM_DELAY))
 VERILATOR_FLAGS += $(if $(CONFIG_DPI_MEM),+define+DPI_MEM)
+VERILATOR_FLAGS += $(if $(CONFIG_PERF),+define+PERF_ENABLE)
+# ── 统计打印开关 (menuconfig) ──
+VERILATOR_FLAGS += $(if $(CONFIG_PRINT_ICACHE),+define+PRINT_ICACHE)
+#icache 参数设置
+VERILATOR_FLAGS += $(if $(CONFIG_ICACHE_INDEX_BITS),+define+ICACHE_INDEX_BITS=$(CONFIG_ICACHE_INDEX_BITS))
+# ── ITRACE (menuconfig): 传给 C++ 侧 ──
+ITRACE_ENABLE := $(if $(CONFIG_ITRACE),1,0)
+VERILATOR_FLAGS += -CFLAGS "-DITRACE_ENABLE=$(ITRACE_ENABLE)"
+
+
+
 
 # DPI_MEM 的内存由 C++ 侧 dpi_pmem_words[] 自己持有 (见 csrc/dpic_mem.cpp),
 # 不依赖 NEMU pmem, 因此 DPI_MEM 与 DIFFTEST 解耦, 二者可独立开关。
@@ -60,6 +71,10 @@ ENABLE_DIFFTEST :=1
 else
 ENABLE_DIFFTEST :=0
 endif
+
+
+
+
 
 # bin2readmemh.py: 把 AM 编出的 .bin 转成 Verilog $readmemh 兼容的 hex 格式
 BIN2HEX := $(NPC_HOME)/../abstract-machine/tools/bin2readmemh.py
@@ -87,3 +102,34 @@ wave:
 
 clean:
 	rm -rf $(BUILD_DIR)
+
+
+
+# ══════════════════════════════════════════════════════════════
+#  make perf —— 一键复现性能数据 (讲义「记录性能数据」要求)
+#
+#  用法:
+#    make perf                 # 默认 test 规模, 快 (约 500K 指令)
+#    make perf PERF_SIZE=train # 正式记录规模 (约 60M 指令)
+# ══════════════════════════════════════════════════════════════
+PERF_SIZE ?= test
+AM_HOME   ?= ../abstract-machine
+BENCH_DIR ?= ../am-kernels/benchmarks/microbench
+BENCH_BIN ?= $(BENCH_DIR)/build/microbench-riscv32-npc.bin
+PERF_BIN  := $(BUILD_DIR)/perf.bin
+PERF_LOG  := $(BUILD_DIR)/perf.log
+PERF_CSV  := perf.csv
+
+perf: all
+	@mkdir -p $(BUILD_DIR)
+	@echo "[perf] 重建基准 (mainargs=$(PERF_SIZE))..."
+	@rm -f $(BENCH_BIN)
+	@$(MAKE) -s -C $(BENCH_DIR) ARCH=riscv32-npc mainargs=$(PERF_SIZE) insert-arg
+	@cp $(BENCH_BIN) $(PERF_BIN)
+	@./$(BUILD_DIR)/V$(TOPNAME) -b $(PERF_BIN) 2>&1 | tee $(PERF_LOG)
+	@echo ""
+	@test -f $(PERF_CSV) || echo "commit,insts,cycles,cpi,ipc,ifu_ev,ifu_pct,lsu_ev,mem_pct,alu,load,store" > $(PERF_CSV)
+	@python3 scripts/perf_report.py $(PERF_LOG) --csv >> $(PERF_CSV)
+	@python3 scripts/perf_report.py $(PERF_LOG)
+	@tail -1 $(PERF_CSV)
+

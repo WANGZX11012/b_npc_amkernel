@@ -27,4 +27,17 @@ CONFIG_DATA_MEM_DELAY=1
 # CONFIG_WAVE is not set
 CONFIG_BATCH=y
 # CONFIG_DIFFTEST is not set
+# CONFIG_PERF is not set
 # end of Testing and Debugging
+
+#
+# Printing
+#
+CONFIG_PRINT_ICACHE=y
+# end of Printing
+
+#
+# Cache Configuration
+#
+CONFIG_ICACHE_INDEX_BITS=10
+# end of Cache Configuration

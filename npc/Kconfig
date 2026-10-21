@@ -45,6 +45,14 @@ endmenu
 
 menu "Testing and Debugging"
 
+config ITRACE
+  bool "Enable instruction trace (build/itrace.bin)"
+  default n
+  help
+    When an instruction is consumed, its disassembly is stored in a text file.
+
+
+
 config HAS_LFSR
   bool "Enable LFSR random delay (bus stress test)"
   default n
@@ -67,5 +75,42 @@ config DIFFTEST
     When enabled, NPC runs alongside NEMU (riscv32-nemu-interpreter-so)
     and compares PC + GPR after every committed instruction.
     Requires: nemu/build/riscv32-nemu-interpreter-so.
+config PERF
+  bool "Enable performance counters (perf.v)"
+  default n
+  help
+    use perf.v to display cpi and other info
+
 
 endmenu
+
+
+menu "Printing"
+
+
+config PRINT_ICACHE
+  bool "Print [icache] hit rate after halt"
+  default y
+  help
+    print icache hit rate
+
+endmenu
+
+menu "Cache Configuration"
+
+config ICACHE_INDEX_BITS
+    int "ICACHE index bits (blocks = 2^N, 4B each)"
+    range 2 10
+    default 4
+    help
+      Number of ICACHE blocks = 2^N, with each block being 4 bytes.
+        4 ->   16 blocks =   64B
+        5 ->   32 blocks =  128B
+        6 ->   64 blocks =  256B
+        7 ->  128 blocks =  512B
+
+endmenu
+
+
+
+

@@ -7,10 +7,10 @@ Area heap = { &_heap_start, (void *)0x0f002000 };
 
 void    putch(char ch)
 {
-    *(volatile char*)0x10000000 = ch;
-    // *(volatile char*)0x30000000 = 1;   // ★ 临时: 故意制造 DECERR, 验完删掉
-    //解释成指针（"这是个地址，指向 1 字节"）
-    // *解引用 操作这个地址的内容
+    /* 等 LSR(0x10000005) 的 THRE(bit5): 发送保持寄存器空才允许写下一个字符。 也就是=1的时候才表示发送完成
+     * 这就是"丢字符"的修复 —— 之前无脑连写, THR 没腾空的数据被 16550 静默丢弃。 */
+    while ((*(volatile unsigned char *)(0x10000005) & 0x20) == 0);  
+    *(volatile unsigned char *)0x10000000 = ch;
 }
 
 void    halt(int code)
