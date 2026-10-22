@@ -23,6 +23,7 @@ CONFIG_DATA_MEM_DELAY=1
 #
 # Testing and Debugging
 #
+CONFIG_ITRACE=y
 # CONFIG_HAS_LFSR is not set
 # CONFIG_WAVE is not set
 CONFIG_BATCH=y
