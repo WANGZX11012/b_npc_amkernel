@@ -20,4 +20,9 @@ run: $(TARGET)
 clean:
 	rm -f $(TARGET)
 
-.PHONY: all run clean
+sweep: $(TARGET)
+	@test -f $(TRACE) || { echo "[sweep] 找不到 $(TRACE): 先跑一次 npc 的 make run 生成 itrace.bin"; exit 1; }
+	./$(TARGET) $(TRACE) --sweep
+
+
+.PHONY: all run clean sweep

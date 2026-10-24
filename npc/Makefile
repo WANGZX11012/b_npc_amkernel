@@ -42,11 +42,17 @@ VERILATOR_FLAGS += $(if $(CONFIG_DPI_MEM),+define+DPI_MEM)
 VERILATOR_FLAGS += $(if $(CONFIG_PERF),+define+PERF_ENABLE)
 # ── 统计打印开关 (menuconfig) ──
 VERILATOR_FLAGS += $(if $(CONFIG_PRINT_ICACHE),+define+PRINT_ICACHE)
-#icache 参数设置
+#icache 参数设置 块数量
 VERILATOR_FLAGS += $(if $(CONFIG_ICACHE_INDEX_BITS),+define+ICACHE_INDEX_BITS=$(CONFIG_ICACHE_INDEX_BITS))
+#icache 参数设置 一个块多大
+VERILATOR_FLAGS += $(if $(CONFIG_ICACHE_BLOCK_BYTES),+define+ICACHE_BLOCK_BYTES=$(CONFIG_ICACHE_BLOCK_BYTES))
+
 # ── ITRACE (menuconfig): 传给 C++ 侧 ──
 ITRACE_ENABLE := $(if $(CONFIG_ITRACE),1,0)
 VERILATOR_FLAGS += -CFLAGS "-DITRACE_ENABLE=$(ITRACE_ENABLE)"
+# CACHESIM 由 menuconfig 控制：跑完自动跑一次 cachesim
+CACHESIM := $(if $(CONFIG_CACHESIM),1,0)
+
 
 
 
@@ -95,13 +101,21 @@ ifneq ($(IMG),)
 	@python3 $(BIN2HEX) $(IMG) $(IMG_HEX)   # .bin -> build/img.hex
 	@echo "[npc] load $(IMG) -> $(IMG_HEX)"  # 打印加载路径供确认
 endif
-	@./$(BUILD_DIR)/V$(TOPNAME)  $(RUN_FLAGS) $(IMG)
+	@./$(BUILD_DIR)/V$(TOPNAME)  $(RUN_FLAGS) $(IMG)   
+# 	这个之后生成的itrace.bin 只要开了itrace
+ifeq ($(CACHESIM),1)
+	@$(MAKE) -s -C cachesim
+	@./cachesim/cachesim $(BUILD_DIR)/itrace.bin
+endif
+
+
 
 wave:
 	@gtkwave $(BUILD_DIR)/sim.vcd &
 
 clean:
 	rm -rf $(BUILD_DIR)
+	rm -f ./perf.csv
 
 
 
