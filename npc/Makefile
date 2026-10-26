@@ -8,12 +8,13 @@ NPC_CSRC  = $(NPC_HOME)/csrc
 VSRCS  = $(sort $(wildcard vsrc/*.v))
 VHSRCS = $(wildcard vsrc/*.vh)
 CSRCS  = $(NPC_CSRC)/main.c          \
-         $(NPC_CSRC)/npc.cpp         \
-         $(NPC_CSRC)/difftest.cpp    \
-         $(NPC_CSRC)/dpic_mem.cpp    \
-         $(NPC_CSRC)/monitor/monitor.c \
-         $(NPC_CSRC)/cpu/cpu-exec.c  \
-         $(NPC_CSRC)/sdb/sdb.c
+		$(NPC_CSRC)/npc.cpp         \
+		$(NPC_CSRC)/difftest.cpp    \
+		$(NPC_CSRC)/dpic_mem.cpp    \
+		$(NPC_CSRC)/monitor/monitor.c \
+		$(NPC_CSRC)/utils/disasm.c  \
+		$(NPC_CSRC)/cpu/cpu-exec.c  \
+		$(NPC_CSRC)/sdb/sdb.c
 
 # NEMU 的 include(提供 difftest-def.h)和 ref.so
 NEMU_INC  = $(abspath ../nemu/include)
@@ -21,8 +22,8 @@ REF_SO    = $(abspath ../nemu/build/riscv32-nemu-interpreter-so)
 
 VERILATOR_FLAGS = --cc --exe --build  --Mdir $(BUILD_DIR) \
                   -I$(abspath vsrc) \
-                  -CFLAGS "-DTRACE_ENABLE=$(TRACE_ENABLE) -I$(NPC_CSRC) -I$(NEMU_INC) -DENABLE_DIFFTEST=$(ENABLE_DIFFTEST)" \
-                  -LDFLAGS "-ldl" \
+                  -CFLAGS "-DTRACE_ENABLE=$(TRACE_ENABLE) -I$(NPC_CSRC) -I$(NEMU_INC) -I$(NPC_HOME)/tools/capstone/repo/include -DENABLE_DIFFTEST=$(ENABLE_DIFFTEST)" \
+                  -LDFLAGS "-ldl -L$(NPC_HOME)/tools/capstone/repo -l:libcapstone.a" \
                   -Wall -Wno-fatal \
                   --top-module $(TOPNAME) \
                   -MAKEFLAGS "OPT_FAST=-O3 OPT_GLOBAL=-O3"
@@ -79,9 +80,6 @@ ENABLE_DIFFTEST :=0
 endif
 
 
-
-
-
 # bin2readmemh.py: 把 AM 编出的 .bin 转成 Verilog $readmemh 兼容的 hex 格式
 BIN2HEX := $(NPC_HOME)/../abstract-machine/tools/bin2readmemh.py
 # inst_mem.v 中 $readmemh("build/img.hex") 的加载目标（相对运行目录 npc/）
@@ -104,7 +102,7 @@ endif
 	@./$(BUILD_DIR)/V$(TOPNAME)  $(RUN_FLAGS) $(IMG)   
 # 	这个之后生成的itrace.bin 只要开了itrace
 ifeq ($(CACHESIM),1)
-	@$(MAKE) -s -C cachesim
+	@$(MAKE)  -C cachesim
 	@./cachesim/cachesim $(BUILD_DIR)/itrace.bin
 endif
 
