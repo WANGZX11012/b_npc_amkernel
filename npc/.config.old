@@ -23,12 +23,13 @@ CONFIG_DATA_MEM_DELAY=1
 #
 # Testing and Debugging
 #
-# CONFIG_ITRACE is not set
+CONFIG_ITRACE=y
+# CONFIG_CACHESIM is not set
 # CONFIG_HAS_LFSR is not set
 # CONFIG_WAVE is not set
-# CONFIG_BATCH is not set
-CONFIG_DIFFTEST=y
-# CONFIG_PERF is not set
+CONFIG_BATCH=y
+# CONFIG_DIFFTEST is not set
+CONFIG_PERF=y
 # end of Testing and Debugging
 
 #
@@ -40,6 +41,6 @@ CONFIG_PRINT_ICACHE=y
 #
 # Cache Configuration
 #
-CONFIG_ICACHE_INDEX_BITS=7
-CONFIG_ICACHE_BLOCK_BYTES=64
+CONFIG_ICACHE_INDEX_BITS=9
+CONFIG_ICACHE_BLOCK_BYTES=16
 # end of Cache Configuration
