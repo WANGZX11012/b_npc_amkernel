@@ -34,7 +34,9 @@ int main()
     {
         dst[i] = target_code[i];
     }
-    ((func_t)TEST_ADDR)(); // 触发函数
+    dst[6] = RET;
+    asm volatile("fence.i" ::: "memory");   // ← 三个冒号 + memory clobber 所有 "memory" 之前的 Store/Load 必须在汇编指令之前完成
+    ((func_t)TEST_ADDR)(); // 触发函数 
 
     return 0;
 }

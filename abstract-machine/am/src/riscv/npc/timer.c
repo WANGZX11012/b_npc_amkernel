@@ -14,7 +14,8 @@
 
 #define CLINT_ADDR     0x0200BFF8u   // mtime 低32位在 +0, 高32位在 +4
 #define CLINT_MTIMECMP 0x02004000u   // mtimecmp 低32位在 +0, 高32位在 +4
-#define CLINT_HZ  5189899ull    // 实测仿真速率 (cycles/s), 见 [mtime] 打印
+#define CLINT_MHZ  10u         // 频率系数: 名义时钟 MHz, 调整它即调整 mtime 的时间尺度
+#define CLINT_clk_devide 1    // 当前频率 再除的频率 例如现在是1M 除以5
 #define TIMER_INTERVAL 10000000u          // 中断间隔, 单位 = mtime 周期数
 
 
@@ -66,7 +67,7 @@ void __am_timer_uptime(AM_TIMER_UPTIME_T *uptime) {
   uint32_t lo = *(volatile uint32_t *)(CLINT_ADDR + 0);
   uint32_t hi = *(volatile uint32_t *)(CLINT_ADDR + 4);
   uint64_t mtime = ((uint64_t)hi << 32) | lo;
-  uptime->us = mtime * 1000000ull / CLINT_HZ;   // 周期数 → 微秒（乘系数换算成接近真实时间）
+  uptime->us = mtime * CLINT_clk_devide / CLINT_MHZ;   // 周期数 → 微秒（乘系数换算成接近真实时间）
 }
 
 void __am_timer_rtc(AM_TIMER_RTC_T *rtc) {

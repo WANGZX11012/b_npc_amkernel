@@ -2,20 +2,6 @@
 #include <klib-macros.h>
 #include <klib.h>
 
-#define RTC_LO  0xa0000048u    // 墙钟低 32 位
-#define RTC_HI  0xa000004Cu    // 墙钟高 32 位
-
-static uint64_t host_us(void)
-{
-  uint32_t lo = *(volatile uint32_t *)RTC_LO;
-  uint32_t hi = *(volatile uint32_t *)RTC_HI;
-  return ((uint64_t)hi << 32) | lo;
-}
-
-
-
-
-
 extern char _heap_start;
 int main(const char *args);
 
@@ -37,52 +23,23 @@ void halt(int code) //am平台 根据不同的平台 编译出的二进制也不
   while (1);
 }
 
-/* 读一个 32 位 CSR */
-#define csrr(reg) ({ uint32_t __t; asm volatile("csrr %0, " #reg : "=r"(__t)); __t; })
-/* 64 位 CSR = 高<<32 | 低 */
-#define csr64(lo, hi) ( ((uint64_t)csrr(hi) << 32) | (uint64_t)csrr(lo) )
-
-static void put_hex(uint32_t v) 
-{
-  static const char *h = "0123456789abcdef";
-  for (int i = 7; i >= 0; i--) putch(h[(v >> (i*4)) & 0xf]);
-}
-
-
 void _trm_init() __attribute__((visibility("default")));
 void _trm_init() 
 {
-  uint64_t c0 = csr64(mcycle,   mcycleh);
-  uint64_t i0 = csr64(minstret, minstreth);
-  uint64_t h0 = host_us();  
+  // uint32_t lo1, lo2;
+  // uint32_t hi1, hi2;
 
-  int ret = main(mainargs);            // ★ microbench 在这里跑
+  // asm volatile("csrrs %0, mcycle, x0" : "=r"(lo1)); //lo1 = read_csr(mcycle); 
+  // asm volatile("csrrs %0, mcycleh, x0" : "=r"(hi1));
+  
+  int ret = main(mainargs);
 
-  uint64_t c1 = csr64(mcycle,   mcycleh);
-  uint64_t i1 = csr64(minstret, minstreth);
-  uint64_t h1 = host_us(); 
-
-  uint64_t cyc = c1 - c0;
-  uint64_t ins = i1 - i0;
-  uint32_t cpi = cyc / ins;
-
-  uint64_t dhost = h1 - h0;
-  uint32_t rate  = (uint32_t)(cyc * 1000000ull / dhost);   // Hz
+  // asm volatile("csrrs %0, mcycle, x0" : "=r"(lo2));
+  // asm volatile("csrrs %0, mcycleh, x0" : "=r"(hi2));
 
 
-  putch('[');putch('c');putch('a');putch('l');putch(']');
-  putch('R');putch('='); put_hex(rate);           // 复用你已有的 put_hex
-  putch('\n');
-
-  putch('\n'); 
-  // 通过CSR打印的 cpi 只是执行main函数期间的
-  putch('[');putch('t');putch('r');putch('m');putch(']');
-  putch('C'); putch('='); put_hex((uint32_t)cyc);
-  putch(' ');  putch('I'); putch('='); put_hex((uint32_t)ins);
-  putch(' ');
-  putch('C');putch('P');putch('I');putch('=');
-  put_hex(cpi);
-  putch('\n');
+  // printf("mcycle before: hi=%d lo=%d\n", hi1, lo1);
+  // printf("mcycle after : hi=%d lo=%d\n", hi2, lo2);
 
   halt(ret);
 

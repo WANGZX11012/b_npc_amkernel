@@ -45,28 +45,6 @@ endmenu
 
 menu "Testing and Debugging"
 
-config ITRACE
-  bool "Enable instruction trace (build/itrace.bin)"
-  default n
-  help
-    When an instruction is consumed, its disassembly is stored in a text file.
-
-config MTRACE
-  bool "Enable memory trace (build/mtrace.bin)"
-  default n
-  help
-    Log every LSU load/store address into build/mtrace.bin,
-    one uint32 per record. Feed it to cachesim to evaluate
-    dcache hit rate.
-
-
-config CACHESIM
-  bool "Run cachesim after make run"
-  depends on ITRACE
-  default n
-  help
-    
-
 config HAS_LFSR
   bool "Enable LFSR random delay (bus stress test)"
   default n
@@ -89,50 +67,5 @@ config DIFFTEST
     When enabled, NPC runs alongside NEMU (riscv32-nemu-interpreter-so)
     and compares PC + GPR after every committed instruction.
     Requires: nemu/build/riscv32-nemu-interpreter-so.
-config PERF
-  bool "Enable performance counters (perf.v)"
-  default n
-  help
-    use perf.v to display cpi and other info
-
 
 endmenu
-
-
-menu "Printing"
-
-
-config PRINT_ICACHE
-  bool "Print [icache] hit rate after halt"
-  default y
-  help
-    print icache hit rate
-
-endmenu
-
-menu "Cache Configuration"
-
-config ICACHE_INDEX_BITS
-    int "ICACHE index bits (blocks = 2^N, #BLOCK_BYTES each)"
-    range 2 10
-    default 4
-    help
-      Number of ICACHE blocks = 2^N
-        4 ->   16 blocks
-        5 ->   32 blocks
-        6 ->   64 blocks
-        7 ->  128 blocks
-
-config ICACHE_BLOCK_BYTES
-  int "ICACHE block size (bytes)"
-  range 4 64
-  default 4
-  help
-    eg: 4 means a cache block contains 4 Bytes(32 bits),bigger size needs to be refilled first
-
-
-endmenu
-
-
-
-

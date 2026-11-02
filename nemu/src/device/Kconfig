@@ -7,17 +7,6 @@ menuconfig DEVICE
 
 if DEVICE
 
-menuconfig HAS_MROM
-  bool "Enable mrom"
-  default n
-
-menuconfig HAS_SRAM
-  bool "Enable sram"
-  default n
-
-
-
-
 config HAS_PORT_IO
   bool
   default y if ISA_x86
