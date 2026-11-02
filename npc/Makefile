@@ -9,6 +9,7 @@ VSRCS  = $(sort $(wildcard vsrc/*.v))
 VHSRCS = $(wildcard vsrc/*.vh)
 CSRCS  = $(NPC_CSRC)/main.c          \
 		$(NPC_CSRC)/npc.cpp         \
+		$(NPC_CSRC)/mtrace.cpp      \
 		$(NPC_CSRC)/difftest.cpp    \
 		$(NPC_CSRC)/dpic_mem.cpp    \
 		$(NPC_CSRC)/monitor/monitor.c \
@@ -22,8 +23,8 @@ REF_SO    = $(abspath ../nemu/build/riscv32-nemu-interpreter-so)
 
 VERILATOR_FLAGS = --cc --exe --build  --Mdir $(BUILD_DIR) \
                   -I$(abspath vsrc) \
-                  -CFLAGS "-DTRACE_ENABLE=$(TRACE_ENABLE) -I$(NPC_CSRC) -I$(NEMU_INC) -I$(NPC_HOME)/tools/capstone/repo/include -DENABLE_DIFFTEST=$(ENABLE_DIFFTEST)" \
-                  -LDFLAGS "-ldl -L$(NPC_HOME)/tools/capstone/repo -l:libcapstone.a" \
+                  -CFLAGS "-O3 -march=native -DWAVE_ENABLE=$(WAVE_ENABLE) -I$(NPC_CSRC) -I$(NEMU_INC) -I$(NPC_HOME)/tools/capstone/repo/include -DENABLE_DIFFTEST=$(ENABLE_DIFFTEST)" \
+                  -LDFLAGS "-O3 -ldl -L$(NPC_HOME)/tools/capstone/repo -l:libcapstone.a" \
                   -Wall -Wno-fatal \
                   --top-module $(TOPNAME) \
                   -MAKEFLAGS "OPT_FAST=-O3 OPT_GLOBAL=-O3"
@@ -32,7 +33,7 @@ VERILATOR_FLAGS = --cc --exe --build  --Mdir $(BUILD_DIR) \
 include $(NPC_HOME)/scripts/config.mk
 -include $(NPC_HOME)/include/config/auto.conf
 # 必须在 include auto.conf 之后才能读 CONFIG_WAVE
-TRACE_ENABLE := $(if $(CONFIG_WAVE),1,0)
+WAVE_ENABLE := $(if $(CONFIG_WAVE),1,0)
 VERILATOR_FLAGS += $(if $(CONFIG_WAVE),--trace)
 
 
@@ -51,6 +52,11 @@ VERILATOR_FLAGS += $(if $(CONFIG_ICACHE_BLOCK_BYTES),+define+ICACHE_BLOCK_BYTES=
 # ── ITRACE (menuconfig): 传给 C++ 侧 ──
 ITRACE_ENABLE := $(if $(CONFIG_ITRACE),1,0)
 VERILATOR_FLAGS += -CFLAGS "-DITRACE_ENABLE=$(ITRACE_ENABLE)"
+# ── MTRACE ──
+VERILATOR_FLAGS += $(if $(CONFIG_MTRACE),+define+MTRACE)
+MTRACE_ENABLE   := $(if $(CONFIG_MTRACE),1,0)
+VERILATOR_FLAGS += -CFLAGS "-DMTRACE_ENABLE=$(MTRACE_ENABLE)"
+
 # CACHESIM 由 menuconfig 控制：跑完自动跑一次 cachesim
 CACHESIM := $(if $(CONFIG_CACHESIM),1,0)
 
